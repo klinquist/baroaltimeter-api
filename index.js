@@ -22,7 +22,7 @@ server.get('/findairport/:lat/:long', (req, res) => {
     const latLongHash = geohash.encode(req.params.lat, req.params.long, 6);
     const cacheResult = cache.get(latLongHash);
     if (cacheResult) {
-        cl(`Returning result from cache: ${cacheResult}`);
+        cl(`Returning result from cache: ${JSON.stringify(cacheResult)}`);
         return res.send(200, {
             icao: cacheResult
         });
