@@ -23,7 +23,7 @@ server.get('/findairport/:lat/:long', (req, res) => {
     const cacheResult = cache.get(latLongHash);
     if (cacheResult) {
         cl(`Returning result from cache: ${cacheResult}`);
-        res.send(200, {
+        return res.send(200, {
             icao: cacheResult
         });
     } else {
@@ -48,21 +48,22 @@ server.get('/getairportdata/:icao', (req, res) => {
     const cacheResult = pressureCache.get(req.params.icao);
     if (cacheResult) {
         cl(`Returning pressure result from cache: ${cacheResult}`);
-        res.send(200, {
+        return res.send(200, {
             data: cacheResult
         });
-    }
-    wu.getAirportData(req.params.icao, (err, result) => {
-        if (err) {
-            cl(`Error from wu: ${err}`);
-            return res.send(500);
-        }
-        pressureCache.set(req.params.icao, result);
-        cl(`Returning airport data result: ${JSON.stringify(result)}`);
-        res.send(200, {
-            data: result
+    } else {
+        wu.getAirportData(req.params.icao, (err, result) => {
+            if (err) {
+                cl(`Error from wu: ${err}`);
+                return res.send(500);
+            }
+            pressureCache.set(req.params.icao, result);
+            cl(`Returning airport data result: ${JSON.stringify(result)}`);
+            res.send(200, {
+                data: result
+            });
         });
-    });
+    }
 });
 
 
