@@ -1,0 +1,25 @@
+{
+  "name": "baroaltimeter-api",
+  "version": "1.0.0",
+  "description": "API for the iOS App \"BaroAltimeter\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/klinquist/baroaltimeter-api.git"
+  },
+  "author": "Kris Linquist <kris@linquist.net>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/klinquist/baroaltimeter-api/issues"
+  },
+  "homepage": "https://github.com/klinquist/baroaltimeter-api#readme",
+  "dependencies": {
+    "ngeohash": "^0.6.0",
+    "node-cache": "^4.2.0",
+    "request": "^2.88.0",
+    "restify": "^7.2.1"
+  }
+}
