@@ -1,6 +1,8 @@
 const Nodecache = require('node-cache');
 const geohash = require('ngeohash');
-const cache = new Nodecache({ stdTTL: 604800 });
+const cache = new Nodecache({
+    stdTTL: 604800
+});
 const pressureCache = new Nodecache({
     stdTTL: 120
 });
@@ -33,7 +35,9 @@ server.get('/findairport/:lat/:long', (req, res) => {
             }
             cl(`ICAO result ${result}`);
             cache.set(latLongHash, result);
-            res.send(200, { icao: result });
+            res.send(200, {
+                icao: result
+            });
         });
     }
 });
@@ -55,7 +59,9 @@ server.get('/getairportdata/:icao', (req, res) => {
         }
         pressureCache.set(req.params.icao, result);
         cl(`Returning airport data result: ${JSON.stringify(result)}`);
-        res.send(200, {data: result});
+        res.send(200, {
+            data: result
+        });
     });
 });
 
