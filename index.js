@@ -40,12 +40,14 @@ server.get('/findairport/:lat/:long', (req, res) => {
     if (cacheResult) {
         cl(`Returning result from cache: ${JSON.stringify(cacheResult)}`);
         return res.send(200, {
-            icao: cacheResult
+            icao: cacheResult,
+            cachedResult: true
         });
     } else if (err) {
         cl(`Returning result from ERROR cache: ${JSON.stringify(err)}`);
         return res.send(500, {
-            error: err
+            error: err,
+            cachedResult: true
         });
     } else {
         cl('Returning result from WU');
@@ -54,12 +56,16 @@ server.get('/findairport/:lat/:long', (req, res) => {
                 cl(`Error from wu: ${err}`);
                 //Also cache errors to avoid abuse
                 errorCache.set(latLongHash, err);
-                return res.send(500);
+                return res.send(500, {
+                    error: err,
+                    cachedResult: false
+                });
             }
             cl(`ICAO result ${result}`);
             cache.set(latLongHash, result);
             res.send(200, {
-                icao: result
+                icao: result,
+                cachedResult: false
             });
         });
     }
@@ -78,12 +84,14 @@ server.get('/getairportdata/:icao', (req, res) => {
     if (cacheResult) {
         cl(`Returning pressure result from cache: ${JSON.stringify(cacheResult)}`);
         return res.send(200, {
-            data: cacheResult
+            data: cacheResult,
+            cachedResult: true
         });
     } else if (err) {
         cl(`Returning ERROR result from cache: ${JSON.stringify(err)}`);
         return res.send(500, {
-            error: err
+            error: err,
+            cachedResult: true
         });
     } else {
         wu.getAirportData(req.params.icao, (err, result) => {
@@ -92,13 +100,15 @@ server.get('/getairportdata/:icao', (req, res) => {
                 //Also cache errors to avoid abuse
                 errorCache.set(req.params.icao, err);
                 return res.send(500, {
-                    error: err
+                    error: err,
+                    cachedResult: false
                 });
             }
             pressureCache.set(req.params.icao, result);
             cl(`Returning airport data result: ${JSON.stringify(result)}`);
             res.send(200, {
-                data: result
+                data: result,
+                cachedResult: false
             });
         });
     }
