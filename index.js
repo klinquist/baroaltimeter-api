@@ -16,6 +16,13 @@ const cl = (logMsg) => {
     console.log(`${new Date().toISOString()} ${logMsg}`);
 };
 
+
+//For server status checks
+server.get('/status', (err, res) => {
+    res.send(200);
+});
+
+
 server.get('/findairport/:lat/:long', (req, res) => {
     if (!req.params || !req.params.lat || !req.params.long) return res.send(500);
     cl(`${req.connection.remoteAddress} Received request to find airport for ${req.params.lat},${req.params.long}`);
@@ -23,14 +30,22 @@ server.get('/findairport/:lat/:long', (req, res) => {
     const cacheResult = cache.get(latLongHash);
     if (cacheResult) {
         cl(`Returning result from cache: ${JSON.stringify(cacheResult)}`);
-        return res.send(200, {
-            icao: cacheResult
-        });
+        if (cacheResult.err) {
+            return res.send(500, {
+                icao: cacheResult.err
+            });
+        } else {
+            return res.send(200, {
+                icao: cacheResult
+            });
+        }
     } else {
         cl('Returning result from WU');
         wu.findICAO(req.params.lat, req.params.long, (err, result) => {
             if (err) {
                 cl(`Error from wu: ${err}`);
+                //Also cache errors to avoid abuse
+                cache.set(latLongHash, {err: err});
                 return res.send(500);
             }
             cl(`ICAO result ${result}`);
@@ -48,14 +63,22 @@ server.get('/getairportdata/:icao', (req, res) => {
     const cacheResult = pressureCache.get(req.params.icao);
     if (cacheResult) {
         cl(`Returning pressure result from cache: ${cacheResult}`);
-        return res.send(200, {
-            data: cacheResult
-        });
+        if (cacheResult.err) {
+            return res.send(500, {
+                error: cacheResult.err
+            });
+        } else {
+            return res.send(200, {
+                data: cacheResult
+            });
+        }
     } else {
         wu.getAirportData(req.params.icao, (err, result) => {
             if (err) {
                 cl(`Error from wu: ${err}`);
-                return res.send(500);
+                //Also cache errors to avoid abuse
+                pressureCache.set(req.params.icao, {err:err});
+                return res.send(500, {error: err});
             }
             pressureCache.set(req.params.icao, result);
             cl(`Returning airport data result: ${JSON.stringify(result)}`);
