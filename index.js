@@ -9,9 +9,7 @@ const pressureCache = new Nodecache({
 const errorCache = new Nodecache({
     stdTTL: 86400
 });
-const wu = new require('./lib/wu')({
-    apiKey: 'xxxxxxx'
-});
+const wu = new require('./lib/wu')();
 const restify = require('restify');
 const server = restify.createServer();
 
@@ -114,6 +112,8 @@ server.get('/getairportdata/:icao', (req, res) => {
     }
 });
 
+wu.getAirports(() => {
+    console.log('Listening on port 3000');
+    server.listen(3000);
+});
 
-console.log('Listening on port 3000');
-server.listen(3000);

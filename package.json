@@ -17,9 +17,12 @@
   },
   "homepage": "https://github.com/klinquist/baroaltimeter-api#readme",
   "dependencies": {
+    "geolib": "^2.0.24",
+    "lodash": "^4.17.11",
     "ngeohash": "^0.6.0",
     "node-cache": "^4.2.0",
     "request": "^2.88.0",
-    "restify": "^7.2.1"
+    "restify": "^7.2.1",
+    "xml2js": "^0.4.19"
   }
 }
